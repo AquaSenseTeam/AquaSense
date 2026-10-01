@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@theme {
+  --color-aqua-900: #043b6e;   /* azul escuro da sidebar e botões */
+  --color-aqua-600: #1e8fd0;
+  --color-aqua-300: #a9d4f5;
+  --color-aqua-100: #e6f3fc;   /* fundo claro */
+  --font-sans: "Poppins", system-ui, sans-serif;
+}
