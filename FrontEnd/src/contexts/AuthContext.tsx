@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import type { Usuario } from '../types'
 import { usuarioService } from '../services/usuarioService'
+import { ApiError, TOKEN_KEY } from '../services/api'
 
 interface AuthCtx {
   usuario: Usuario | null
@@ -15,20 +16,26 @@ const KEY = 'aquasense:usuario'
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [usuario, setUsuario] = useState<Usuario | null>(() => {
     const salvo = localStorage.getItem(KEY)
-    return salvo ? (JSON.parse(salvo) as Usuario) : null
+    return salvo && localStorage.getItem(TOKEN_KEY) ? (JSON.parse(salvo) as Usuario) : null
   })
 
   async function login(email: string, senha: string) {
-    const u = await usuarioService.login(email, senha)
-    if (!u) return false
-    setUsuario(u)
-    localStorage.setItem(KEY, JSON.stringify(u))
-    return true
+    try {
+      const { token, usuario: u } = await usuarioService.login(email, senha)
+      localStorage.setItem(TOKEN_KEY, token)
+      localStorage.setItem(KEY, JSON.stringify(u))
+      setUsuario(u)
+      return true
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 401) return false
+      throw e
+    }
   }
 
   function logout() {
     setUsuario(null)
     localStorage.removeItem(KEY)
+    localStorage.removeItem(TOKEN_KEY)
   }
 
   return <Ctx.Provider value={{ usuario, login, logout }}>{children}</Ctx.Provider>

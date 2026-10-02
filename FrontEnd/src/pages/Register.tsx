@@ -1,6 +1,8 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+// import Logo from '../components/Logo'
 import { usuarioService } from '../services/usuarioService'
+import { ApiError } from '../services/api'
 
 const inicial = {
   nomeCompleto: '', cpf: '', email: '', telefone: '', senha: '', confirmar: '',
@@ -19,16 +21,16 @@ export default function Register() {
     if (f.senha.length < 8) return setErro('A senha precisa ter 8 caracteres ou mais.')
     if (f.senha !== f.confirmar) return setErro('As senhas não coincidem.')
     try {
-      const u = await usuarioService.cadastrar({
+      await usuarioService.cadastrar({
         nomeCompleto: f.nomeCompleto, cpf: f.cpf, email: f.email, telefone: f.telefone, senha: f.senha,
-      })
-      await usuarioService.criarEndereco({
-        usuarioId: u.id, cep: f.cep, logradouro: f.logradouro, numero: f.numero,
-        complemento: f.complemento, cidade: f.cidade, estado: f.estado,
+        endereco: {
+          cep: f.cep, logradouro: f.logradouro, numero: f.numero,
+          complemento: f.complemento, cidade: f.cidade, estado: f.estado,
+        },
       })
       navigate('/login')
-    } catch {
-      setErro('Não foi possível concluir o cadastro. A API está rodando?')
+    } catch (e) {
+      setErro(e instanceof ApiError ? e.message : 'Não foi possível concluir o cadastro. A API está rodando?')
     }
   }
 
@@ -43,6 +45,7 @@ export default function Register() {
   return (
     <div className="grid min-h-screen md:grid-cols-[2fr_1fr]">
       <form onSubmit={enviar} className="p-6 md:p-12">
+        {/* <Logo /> */}
         <h1 className="mt-6 text-center text-2xl font-bold">Crie sua conta</h1>
         <p className="mb-6 text-center text-xs">Preencha os dados abaixo para começar a usar o AquaSense</p>
         <div className="grid gap-6 rounded-2xl bg-aqua-300 p-6 md:grid-cols-2">
