@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import type { Usuario } from '../types'
 import { usuarioService } from '../services/usuarioService'
@@ -8,6 +7,7 @@ interface AuthCtx {
   usuario: Usuario | null
   login: (email: string, senha: string) => Promise<boolean>
   logout: () => void
+  atualizar: (u: Usuario) => void
 }
 
 const Ctx = createContext<AuthCtx | null>(null)
@@ -16,17 +16,21 @@ const KEY = 'aquasense:usuario'
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [usuario, setUsuario] = useState<Usuario | null>(() => {
     const salvo = localStorage.getItem(KEY)
-    return salvo && localStorage.getItem(TOKEN_KEY) ? (JSON.parse(salvo) as Usuario) : null
+    if (!salvo || !localStorage.getItem(TOKEN_KEY)) return null
+    try { return JSON.parse(salvo) as Usuario } catch { return null }
   })
 
   async function login(email: string, senha: string) {
     try {
-      const { token, usuario: u } = await usuarioService.login(email, senha)
-      localStorage.setItem(TOKEN_KEY, token)
+      const resposta = await usuarioService.login(email, senha)
+      localStorage.setItem(TOKEN_KEY, resposta.token)
+      const u = await usuarioService.me()
       localStorage.setItem(KEY, JSON.stringify(u))
       setUsuario(u)
       return true
     } catch (e) {
+      localStorage.removeItem(TOKEN_KEY)
+      localStorage.removeItem(KEY)
       if (e instanceof ApiError && e.status === 401) return false
       throw e
     }
@@ -38,7 +42,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(TOKEN_KEY)
   }
 
-  return <Ctx.Provider value={{ usuario, login, logout }}>{children}</Ctx.Provider>
+  function atualizar(u: Usuario) {
+    setUsuario(u)
+    localStorage.setItem(KEY, JSON.stringify(u))
+  }
+
+  return <Ctx.Provider value={{ usuario, login, logout, atualizar }}>{children}</Ctx.Provider>
 }
 
 export function useAuth() {

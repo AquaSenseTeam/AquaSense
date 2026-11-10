@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Droplet, CircleCheck, Bell, ChartNoAxesColumn, Faucet } from 'lucide-react'
+import { Droplet, CircleCheck, Bell, ChartNoAxesColumn, Faucet, type LucideIcon } from 'lucide-react'
 import TabsFilter from '../components/TabsFilter'
 import { useAuth } from '../contexts/AuthContext'
 import { useCarregar } from '../hooks'
@@ -14,7 +14,7 @@ const abas = [
   { valor: 'SISTEMA' as Aba, rotulo: 'Sistema' },
   { valor: 'DICA' as Aba, rotulo: 'Dicas' },
 ]
-const icones = { OCORRENCIA: Droplet, SISTEMA: CircleCheck, DICA: Faucet, ALERTA_CONSUMO: ChartNoAxesColumn }
+const icones: Record<string, LucideIcon> = { OCORRENCIA: Droplet, SISTEMA: CircleCheck, DICA: Faucet, ALERTA_CONSUMO: ChartNoAxesColumn }
 
 export default function Notificacoes() {
   const { usuario } = useAuth()
@@ -24,8 +24,12 @@ export default function Notificacoes() {
   const lista = dados.filter((n) => aba === 'todos' || n.tipo === aba || (aba === 'OCORRENCIA' && n.tipo === 'ALERTA_CONSUMO'))
 
   async function ler(id: number) {
-    await notificacaoService.marcarComoLida(id)
-    setDados(dados.map((n) => (n.id === id ? { ...n, lida: true } : n)))
+    try {
+      await notificacaoService.marcarComoLida(id)
+      setDados((atuais) => atuais.map((n) => (n.id === id ? { ...n, lida: true } : n)))
+    } catch {
+      // A lista permanece como está; o próximo carregamento poderá sincronizar o estado.
+    }
   }
 
   return (
@@ -45,7 +49,7 @@ export default function Notificacoes() {
               <Icone className="mt-1 h-5 w-5 text-aqua-600" />
               <div className="text-sm">
                 <p className="font-semibold">{n.titulo}</p>
-                <p className="text-xs">{n.mensagem}</p>
+                <p className="text-xs">{n.mensagem ?? ''}</p>
                 <p className="text-[11px] text-aqua-700">{formatarData(n.dataHora)}</p>
               </div>
             </li>

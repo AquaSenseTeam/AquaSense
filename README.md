@@ -89,7 +89,7 @@ O sistema pode trabalhar com diferentes tipos de problemas relacionados ao abast
 
 **Backend**
 
-* Express.Js
+* Java Spring Boot
 
 **Banco de dados**
 
@@ -114,9 +114,9 @@ AquaSense/
 │   └── ...
 │
 ├── backend/
+│   ├── config/
 │   ├── controllers/
-│   ├── services/
-│   ├── models/
+│   ├── dtos/
 │   └── ...
 |
 │

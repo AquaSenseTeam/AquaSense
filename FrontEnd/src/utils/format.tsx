@@ -8,14 +8,17 @@ export const tipoLabel: Record<TipoOcorrencia, string> = {
 }
 
 export const statusLabel: Record<StatusOcorrencia, string> = {
-  EM_ANALISE: 'Em análise',
+  PENDENTE: 'Pendente',
   EM_ANDAMENTO: 'Em andamento',
   RESOLVIDA: 'Resolvida',
-  RECUSADA: 'Recusada',
+  CANCELADA: 'Cancelada',
 }
 
-export const formatarData = (iso: string) =>
-  new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+export const formatarData = (iso?: string | null) => iso
+  ? new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+  : '—'
 
-export const mesCurto = (ym: string) =>
-  new Date(`${ym}-01T00:00:00`).toLocaleString('pt-BR', { month: 'short' }).replace('.', '')
+export const mesCurto = (ym: string) => {
+  const mes = ym.slice(0, 7)
+  return new Date(`${mes}-01T00:00:00`).toLocaleString('pt-BR', { month: 'short' }).replace('.', '')
+}

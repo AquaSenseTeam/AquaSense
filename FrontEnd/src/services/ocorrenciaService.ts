@@ -1,12 +1,28 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { api } from './api'
-import type { Ocorrencia } from '../types'
+import type { Ocorrencia, TipoOcorrencia } from '../types'
+
+type NovaOcorrencia = {
+  enderecoId?: number | null
+  latitude?: number | null
+  longitude?: number | null
+  tipo: TipoOcorrencia
+  descricao?: string | null
+}
 
 export const ocorrenciaService = {
-  listar: (_usuarioId?: number) => api<Ocorrencia[]>('/ocorrencias'),
-  criar: (dados: Pick<Ocorrencia, 'enderecoId' | 'tipo' | 'descricao'> & Partial<Ocorrencia>) =>
+  listar: (_usuarioId?: number) =>
+    api<Ocorrencia[]>('/ocorrencias'),
+
+  criar: (dados: NovaOcorrencia) =>
     api<Ocorrencia>('/ocorrencias', {
       method: 'POST',
-      body: JSON.stringify({ enderecoId: dados.enderecoId, tipo: dados.tipo, descricao: dados.descricao }),
+      body: JSON.stringify({
+        enderecoId: dados.enderecoId ?? null,
+        latitude: dados.latitude ?? null,
+        longitude: dados.longitude ?? null,
+        tipo: dados.tipo,
+        descricao: dados.descricao ?? null,
+      }),
     }),
 }
