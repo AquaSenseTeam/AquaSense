@@ -2,11 +2,16 @@ package com.nathaliaay.aquasense.entities;
 
 import java.time.LocalDateTime;
 
+import com.nathaliaay.aquasense.enums.TipoUsuario;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -20,7 +25,7 @@ public class Usuario {
     @Column(name = "nome_completo", nullable = false, length = 150)
     private String nomeCompleto;
 
-    @Column(nullable = false, length = 11)
+    @Column(length = 11)
     private String cpf;
 
     @Column(nullable = false, length = 255)
@@ -37,7 +42,14 @@ public class Usuario {
     
     @Column(name = "foto_perfil", length = 500)
     private String fotoPerfil;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private TipoUsuario tipo;
 
+    @OneToOne(mappedBy = "usuario")
+    private EmpresaSaneamento empresa;
+    
     public Usuario() {
     }
 
@@ -101,5 +113,19 @@ public class Usuario {
 		this.fotoPerfil = fotoPerfil;
 	}
     
+	public TipoUsuario getTipo() {
+	    return tipo;
+	}
+
+	public void setTipo(TipoUsuario tipo) {
+	    this.tipo = tipo;
+	}
     
+	public EmpresaSaneamento getEmpresa() {
+	    return empresa;
+	}
+
+	public void setEmpresa(EmpresaSaneamento empresa) {
+	    this.empresa = empresa;
+	}
 }

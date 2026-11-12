@@ -1,8 +1,30 @@
+
 import type { ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import type { TipoUsuario } from '../types'
 
-export default function ProtectedRoute({ children }: { children: ReactNode }) {
+interface ProtectedRouteProps {
+  children: ReactNode
+  tiposPermitidos?: TipoUsuario[]
+}
+
+export default function ProtectedRoute({
+  children,
+  tiposPermitidos,
+}: ProtectedRouteProps) {
   const { usuario } = useAuth()
-  return usuario ? <>{children}</> : <Navigate to="/login" replace />
+
+  if (!usuario) {
+    return <Navigate to="/login" replace />
+  }
+
+  if (
+    tiposPermitidos &&
+    !tiposPermitidos.includes(usuario.tipo)
+  ) {
+    return <Navigate to="/inicio" replace />
+  }
+
+  return <>{children}</>
 }

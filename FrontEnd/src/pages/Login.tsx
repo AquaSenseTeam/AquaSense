@@ -23,26 +23,48 @@ export default function Login() {
   const [mostrarSenha, setMostrarSenha] = useState(false)
 
   async function entrar(e: FormEvent) {
-    e.preventDefault()
-    setErro('')
-    setCarregando(true)
+  e.preventDefault()
+  setErro('')
+  setCarregando(true)
 
-    try {
-      const ok = await login(email, senha)
+  try {
+    const ok = await login(email, senha)
 
-      if (ok) {
-        navigate('/inicio')
-      } else {
-        setErro('E-mail ou senha incorretos.')
+    if (ok) {
+      const usuarioSalvo = localStorage.getItem('aquasense:usuario')
+
+      if (!usuarioSalvo) {
+        setErro('Não foi possível identificar o tipo de usuário.')
+        return
       }
-    } catch {
-      setErro(
-        'Não foi possível conectar ao servidor. Verifique se o backend Spring Boot está iniciado.',
-      )
-    } finally {
-      setCarregando(false)
+
+      const usuario = JSON.parse(usuarioSalvo) as { tipo: string }
+
+      switch (usuario.tipo) {
+        case 'ADMIN':
+          navigate('/admin', { replace: true })
+          break
+
+        case 'EMPRESA':
+          navigate('/empresa', { replace: true })
+          break
+
+        case 'MORADOR':
+        default:
+          navigate('/inicio', { replace: true })
+          break
+      }
+    } else {
+      setErro('E-mail ou senha incorretos.')
     }
+  } catch {
+    setErro(
+      'Não foi possível conectar ao servidor. Verifique se o backend Spring Boot está iniciado.',
+    )
+  } finally {
+    setCarregando(false)
   }
+}
 
   return (
     <main className="min-h-screen bg-gray-50 md:grid md:grid-cols-2">

@@ -9,6 +9,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.nathaliaay.aquasense.dtos.LoginDTO;
 import com.nathaliaay.aquasense.dtos.LoginRespostaDTO;
 import com.nathaliaay.aquasense.entities.Usuario;
+import com.nathaliaay.aquasense.enums.TipoUsuario;
+import com.nathaliaay.aquasense.enums.StatusAprovacao;
 import com.nathaliaay.aquasense.repositories.UsuarioRepository;
 import com.nathaliaay.aquasense.security.JwtService;
 
@@ -21,13 +23,13 @@ public class AuthService {
 
     public AuthService(
             UsuarioRepository usuarioRepository,
-            JwtService jwtService) {
+            JwtService jwtService,
+            BCryptPasswordEncoder passwordEncoder) {
 
         this.usuarioRepository = usuarioRepository;
         this.jwtService = jwtService;
-        this.passwordEncoder = new BCryptPasswordEncoder();
+        this.passwordEncoder = passwordEncoder;
     }
-
     public LoginRespostaDTO login(LoginDTO dados) {
 
         String email = dados.email().trim().toLowerCase();
@@ -50,6 +52,28 @@ public class AuthService {
             );
         }
 
+        // Verifica se a empresa está aprovada
+        if (usuario.getTipo() == TipoUsuario.EMPRESA) {
+
+            if (usuario.getEmpresa() == null) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Não foi possível localizar o cadastro da empresa."
+                );
+            }
+
+            StatusAprovacao status = usuario.getEmpresa().getStatusAprovacao();
+
+            if (status != StatusAprovacao.APROVADA) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        status == StatusAprovacao.PENDENTE
+                                ? "Seu cadastro está aguardando aprovação."
+                                : "O cadastro da sua empresa foi rejeitado."
+                );
+            }
+        }
+
         String token = jwtService.gerarToken(
                 usuario.getId(),
                 usuario.getEmail()
@@ -59,7 +83,8 @@ public class AuthService {
                 token,
                 "Bearer",
                 usuario.getId(),
-                usuario.getNomeCompleto()
+                usuario.getNomeCompleto(),
+                usuario.getTipo()
         );
     }
 }

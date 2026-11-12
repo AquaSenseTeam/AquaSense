@@ -17,7 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.nathaliaay.aquasense.dtos.EnderecoCadastroDTO;
@@ -28,6 +27,7 @@ import com.nathaliaay.aquasense.dtos.UsuarioRespostaDTO;
 import com.nathaliaay.aquasense.entities.Endereco;
 import com.nathaliaay.aquasense.entities.PreferenciaNotificacoes;
 import com.nathaliaay.aquasense.entities.Usuario;
+import com.nathaliaay.aquasense.enums.TipoUsuario;
 import com.nathaliaay.aquasense.repositories.EnderecoRepository;
 import com.nathaliaay.aquasense.repositories.PreferenciaNotificacoesRepository;
 import com.nathaliaay.aquasense.repositories.UsuarioRepository;
@@ -46,11 +46,12 @@ public class UsuarioService {
     public UsuarioService(
             UsuarioRepository usuarioRepository,
             EnderecoRepository enderecoRepository,
-            PreferenciaNotificacoesRepository preferenciaRepository) {
+            PreferenciaNotificacoesRepository preferenciaRepository,
+            BCryptPasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.enderecoRepository = enderecoRepository;
         this.preferenciaRepository = preferenciaRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder();
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -72,6 +73,7 @@ public class UsuarioService {
         usuario.setTelefone(dados.telefone() == null || dados.telefone().isBlank() ? null : dados.telefone().trim());
         usuario.setSenhaHash(passwordEncoder.encode(dados.senha()));
         usuario.setDataCadastro(LocalDateTime.now());
+        usuario.setTipo(TipoUsuario.MORADOR);
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
 
         EnderecoCadastroDTO dadosEndereco = dados.endereco();
@@ -136,7 +138,15 @@ public class UsuarioService {
     }
 
     private UsuarioRespostaDTO converter(Usuario usuario) {
-        return new UsuarioRespostaDTO(usuario.getId(), usuario.getNomeCompleto(), usuario.getCpf(), usuario.getEmail(), usuario.getTelefone(), usuario.getDataCadastro());
+        return new UsuarioRespostaDTO(
+            usuario.getId(),
+            usuario.getNomeCompleto(),
+            usuario.getCpf(),
+            usuario.getEmail(),
+            usuario.getTelefone(),
+            usuario.getDataCadastro(),
+            usuario.getTipo()
+        );
     }
     
     @Transactional

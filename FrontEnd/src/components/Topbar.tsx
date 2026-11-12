@@ -1,13 +1,27 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+
 import { useEffect, useState } from 'react'
-import { Bell, Search, User } from 'lucide-react'
+import { Bell, Search, User, Menu, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { usuarioService } from '../services/usuarioService'
 import Logo from './Logo'
 
-export default function Topbar({ naoLidas }: { naoLidas: number }) {
+interface TopbarProps {
+  naoLidas: number
+  onMenuClick?: () => void
+  menuAberto?: boolean
+}
+
+export default function Topbar({
+  naoLidas,
+  onMenuClick,
+  menuAberto = false,
+}: TopbarProps) {
   const { usuario } = useAuth()
   const [fotoUrl, setFotoUrl] = useState<string | null>(null)
+
+  const isAdmin = usuario?.tipo === 'ADMIN'
 
   useEffect(() => {
     let ativo = true
@@ -35,7 +49,24 @@ export default function Topbar({ naoLidas }: { naoLidas: number }) {
   }, [usuario?.email])
 
   return (
-    <header className="flex items-center gap-4 bg-white px-4 py-2 shadow-sm">
+    <header className="relative z-30 flex h-[74px] shrink-0 items-center gap-3 border-b bg-white px-3 shadow-sm sm:px-5">
+
+      {onMenuClick && (
+        <button
+          type="button"
+          onClick={onMenuClick}
+          aria-label={menuAberto ? 'Fechar menu' : 'Abrir menu'}
+          aria-expanded={menuAberto}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-aqua-900 transition hover:bg-aqua-50 md:hidden"
+        >
+          {menuAberto ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
+        </button>
+      )}
+
       <Logo />
 
       <div className="relative mx-auto hidden w-full max-w-xl sm:block">
@@ -46,20 +77,26 @@ export default function Topbar({ naoLidas }: { naoLidas: number }) {
         />
       </div>
 
-      <Link to="/notificacoes" aria-label="Notificações" className="relative ml-auto">
-        <Bell className="h-5 w-5" />
+      {!isAdmin && (
+        <Link
+          to="/notificacoes"
+          aria-label="Notificações"
+          className="relative ml-auto shrink-0"
+        >
+          <Bell className="h-5 w-5" />
 
-        {naoLidas > 0 && (
-          <span className="absolute -right-2 -top-2 rounded-full bg-orange-500 px-1.5 text-[10px] text-white">
-            {naoLidas}
-          </span>
-        )}
-      </Link>
+          {naoLidas > 0 && (
+            <span className="absolute -right-2 -top-2 rounded-full bg-orange-500 px-1.5 text-[10px] text-white">
+              {naoLidas}
+            </span>
+          )}
+        </Link>
+      )}
 
       <Link
-        to="/perfil"
+        to={isAdmin ? '/admin' : '/perfil'}
         aria-label="Meu perfil"
-        className="flex shrink-0 items-center gap-2 text-sm"
+        className={`flex shrink-0 items-center gap-2 text-sm ${isAdmin ? 'ml-auto' : ''}`}
       >
         {fotoUrl ? (
           <img

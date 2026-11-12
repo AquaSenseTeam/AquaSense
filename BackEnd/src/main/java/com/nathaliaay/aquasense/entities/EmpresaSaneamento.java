@@ -1,11 +1,17 @@
 
 package com.nathaliaay.aquasense.entities;
 
+import com.nathaliaay.aquasense.enums.StatusAprovacao;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -19,8 +25,31 @@ public class EmpresaSaneamento {
     @Column(nullable = false, length = 150)
     private String nome;
 
+    @Column(name = "nome_fantasia", length = 150)
+    private String nomeFantasia;
+
+    @Column(nullable = false, unique = true, length = 14)
+    private String cnpj;
+
     @Column(length = 150)
     private String email;
+
+    @Column(length = 20)
+    private String telefone;
+
+    @Column(length = 100)
+    private String cidade;
+
+    @Column(length = 2)
+    private String estado;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_aprovacao", nullable = false, length = 20)
+    private StatusAprovacao statusAprovacao = StatusAprovacao.PENDENTE;
+
+    @OneToOne
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
+    private Usuario usuario;
 
     public EmpresaSaneamento() {
     }
@@ -33,8 +62,36 @@ public class EmpresaSaneamento {
         return nome;
     }
 
+    public String getNomeFantasia() {
+        return nomeFantasia;
+    }
+
+    public String getCnpj() {
+        return cnpj;
+    }
+
     public String getEmail() {
         return email;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public StatusAprovacao getStatusAprovacao() {
+        return statusAprovacao;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
     }
 
     public void setId(Integer id) {
@@ -45,7 +102,35 @@ public class EmpresaSaneamento {
         this.nome = nome;
     }
 
+    public void setNomeFantasia(String nomeFantasia) {
+        this.nomeFantasia = nomeFantasia;
+    }
+
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
+    }
+
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public void setStatusAprovacao(StatusAprovacao statusAprovacao) {
+        this.statusAprovacao = statusAprovacao;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 }

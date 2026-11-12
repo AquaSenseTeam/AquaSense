@@ -1,6 +1,7 @@
 export type TipoOcorrencia = 'VAZAMENTO' | 'FALTA_DE_AGUA' | 'AUMENTO_DE_CONSUMO' | 'OUTROS'
 export type StatusOcorrencia = 'PENDENTE' | 'EM_ANDAMENTO' | 'RESOLVIDA' | 'CANCELADA'
 export type TipoNotificacao = 'OCORRENCIA' | 'SISTEMA' | 'DICA' | 'ALERTA_CONSUMO' | string
+export type TipoUsuario = 'MORADOR' | 'EMPRESA' | 'ADMIN'
 
 export interface Usuario {
   id: number
@@ -8,6 +9,7 @@ export interface Usuario {
   cpf: string
   email: string
   telefone?: string | null
+  tipo: TipoUsuario
   dataCadastro?: string
 }
 
