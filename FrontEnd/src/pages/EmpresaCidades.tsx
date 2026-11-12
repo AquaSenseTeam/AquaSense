@@ -177,7 +177,7 @@ export default function EmpresaCidades() {
           <button
             type="submit"
             disabled={salvando}
-            className="flex items-center justify-center gap-2 rounded-lg bg-aqua-700 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-aqua-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex items-center justify-center gap-2 rounded-lg bg-aqua-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-aqua-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {salvando ? (
               <LoaderCircle className="h-4 w-4 animate-spin" />
