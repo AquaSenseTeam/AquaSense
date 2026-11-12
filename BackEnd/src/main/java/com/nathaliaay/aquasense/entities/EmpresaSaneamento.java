@@ -1,5 +1,6 @@
-
 package com.nathaliaay.aquasense.entities;
+
+import java.util.ArrayList;
 
 import com.nathaliaay.aquasense.enums.StatusAprovacao;
 
@@ -11,8 +12,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.util.List;
+import jakarta.persistence.CascadeType;
 
 @Entity
 @Table(name = "empresas_saneamento")
@@ -49,6 +53,13 @@ public class EmpresaSaneamento {
 
     @OneToOne
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
+
+    @OneToMany(
+            mappedBy = "empresa",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<CidadeAtendida> cidadesAtendidas = new ArrayList<>();
     private Usuario usuario;
 
     public EmpresaSaneamento() {
@@ -132,5 +143,13 @@ public class EmpresaSaneamento {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public List<CidadeAtendida> getCidadesAtendidas() {
+        return cidadesAtendidas;
+    }
+
+    public void setCidadesAtendidas(List<CidadeAtendida> cidadesAtendidas) {
+        this.cidadesAtendidas = cidadesAtendidas;
     }
 }
