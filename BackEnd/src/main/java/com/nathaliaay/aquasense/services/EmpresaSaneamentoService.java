@@ -18,21 +18,26 @@ import com.nathaliaay.aquasense.enums.StatusAprovacao;
 import com.nathaliaay.aquasense.enums.TipoUsuario;
 import com.nathaliaay.aquasense.repositories.EmpresaSaneamentoRepository;
 import com.nathaliaay.aquasense.repositories.UsuarioRepository;
+import com.nathaliaay.aquasense.entities.CidadeAtendida;
+import com.nathaliaay.aquasense.repositories.CidadeAtendidaRepository;
 
 @Service
 public class EmpresaSaneamentoService {
 
     private final EmpresaSaneamentoRepository empresaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final CidadeAtendidaRepository cidadeAtendidaRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     public EmpresaSaneamentoService(
             EmpresaSaneamentoRepository empresaRepository,
             UsuarioRepository usuarioRepository,
+            CidadeAtendidaRepository cidadeAtendidaRepository,
             BCryptPasswordEncoder passwordEncoder) {
 
         this.empresaRepository = empresaRepository;
         this.usuarioRepository = usuarioRepository;
+        this.cidadeAtendidaRepository = cidadeAtendidaRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -56,6 +61,15 @@ public class EmpresaSaneamentoService {
 
         String cidade = dados.cidade().trim();
         String estado = dados.estado().trim().toUpperCase();
+        if (cidadeAtendidaRepository.existsByCidadeIgnoreCaseAndEstadoIgnoreCase(
+        cidade,
+        estado)) {
+
+    throw new ResponseStatusException(
+            HttpStatus.CONFLICT,
+            "Esta cidade já possui uma empresa responsável."
+    );
+}
 
         // Verifica se o e-mail já está cadastrado
         if (usuarioRepository.existsByEmail(email)) {
@@ -100,6 +114,15 @@ public class EmpresaSaneamentoService {
         // Vincula a empresa ao usuário
         empresa.setUsuario(usuarioSalvo);
         usuarioSalvo.setEmpresa(empresa);
+
+        // Cadastra a cidade inicial da empresa
+        CidadeAtendida cidadeAtendida = new CidadeAtendida();
+
+        cidadeAtendida.setCidade(cidade);
+        cidadeAtendida.setEstado(estado);
+        cidadeAtendida.setEmpresa(empresa);
+
+        empresa.getCidadesAtendidas().add(cidadeAtendida);
 
         EmpresaSaneamento empresaSalva =
                 empresaRepository.save(empresa);

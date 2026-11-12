@@ -1,6 +1,7 @@
 package com.nathaliaay.aquasense.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -15,4 +16,6 @@ public interface EmpresaSaneamentoRepository
     List<EmpresaSaneamento> findByStatusAprovacao(
             StatusAprovacao statusAprovacao
     );
+
+    Optional<EmpresaSaneamento> findByUsuarioId(Integer usuarioId);
 }
