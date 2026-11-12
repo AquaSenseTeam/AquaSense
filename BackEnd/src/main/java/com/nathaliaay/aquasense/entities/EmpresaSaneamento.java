@@ -53,6 +53,7 @@ public class EmpresaSaneamento {
 
     @OneToOne
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
+    private Usuario usuario;
 
     @OneToMany(
             mappedBy = "empresa",
@@ -60,7 +61,6 @@ public class EmpresaSaneamento {
             orphanRemoval = true
     )
     private List<CidadeAtendida> cidadesAtendidas = new ArrayList<>();
-    private Usuario usuario;
 
     public EmpresaSaneamento() {
     }
