@@ -23,7 +23,13 @@ export default function ProtectedRoute({
     tiposPermitidos &&
     !tiposPermitidos.includes(usuario.tipo)
   ) {
-    return <Navigate to="/inicio" replace />
+    const rotasPorTipo: Record<TipoUsuario, string> = {
+      MORADOR: '/inicio',
+      EMPRESA: '/empresa',
+      ADMIN: '/admin',
+    }
+
+    return <Navigate to={rotasPorTipo[usuario.tipo]} replace />
   }
 
   return <>{children}</>

@@ -1,7 +1,13 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 
 import { useEffect, useState } from 'react'
-import { Bell, Search, User, Menu, X } from 'lucide-react'
+import {
+  Bell,
+  Search,
+  User,
+  Building2,
+  Menu,
+  X,
+} from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { usuarioService } from '../services/usuarioService'
@@ -22,12 +28,28 @@ export default function Topbar({
   const [fotoUrl, setFotoUrl] = useState<string | null>(null)
 
   const isAdmin = usuario?.tipo === 'ADMIN'
+  const isEmpresa = usuario?.tipo === 'EMPRESA'
+  const isMorador = usuario?.tipo === 'MORADOR'
+
+  const rotaNotificacoes = isEmpresa
+    ? '/empresa/notificacoes'
+    : '/notificacoes'
+
+  const rotaPerfil = isAdmin
+    ? '/admin'
+    : isEmpresa
+      ? '/empresa/perfil'
+      : '/perfil'
 
   useEffect(() => {
     let ativo = true
     let url: string | null = null
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFotoUrl(null)
+
+    // Por enquanto, somente moradores possuem foto de perfil.
+    if (!isMorador) return
 
     usuarioService.obterFotoPerfil()
       .then(async (resposta) => {
@@ -46,7 +68,7 @@ export default function Topbar({
       ativo = false
       if (url) URL.revokeObjectURL(url)
     }
-  }, [usuario?.email])
+  }, [usuario?.email, isMorador])
 
   return (
     <header className="relative z-30 flex h-[74px] shrink-0 items-center gap-3 border-b bg-white px-3 shadow-sm sm:px-5">
@@ -79,7 +101,7 @@ export default function Topbar({
 
       {!isAdmin && (
         <Link
-          to="/notificacoes"
+          to={rotaNotificacoes}
           aria-label="Notificações"
           className="relative ml-auto shrink-0"
         >
@@ -94,9 +116,11 @@ export default function Topbar({
       )}
 
       <Link
-        to={isAdmin ? '/admin' : '/perfil'}
-        aria-label="Meu perfil"
-        className={`flex shrink-0 items-center gap-2 text-sm ${isAdmin ? 'ml-auto' : ''}`}
+        to={rotaPerfil}
+        aria-label={isEmpresa ? 'Dados da empresa' : 'Meu perfil'}
+        className={`flex shrink-0 items-center gap-2 text-sm ${
+          isAdmin ? 'ml-auto' : ''
+        }`}
       >
         {fotoUrl ? (
           <img
@@ -106,7 +130,11 @@ export default function Topbar({
           />
         ) : (
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-aqua-100 text-aqua-600">
-            <User className="h-5 w-5" />
+            {isEmpresa ? (
+              <Building2 className="h-5 w-5" />
+            ) : (
+              <User className="h-5 w-5" />
+            )}
           </span>
         )}
 
