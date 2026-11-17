@@ -10,10 +10,15 @@ import com.nathaliaay.aquasense.entities.Ocorrencia;
 
 public interface OcorrenciaRepository extends JpaRepository<Ocorrencia, Integer> {
 
-    List<Ocorrencia> findByUsuarioIdOrderByDataRegistroDesc(
-            Integer usuarioId);
+    List<Ocorrencia> findByUsuarioIdOrderByDataRegistroDesc(Integer usuarioId);
 
-    Optional<Ocorrencia> findByIdAndUsuarioId(
-            Integer id,
-            Integer usuarioId);
+    Optional<Ocorrencia> findByIdAndUsuarioId(Integer id, Integer usuarioId);
+
+    List<Ocorrencia> findByEnderecoCidadeIgnoreCaseAndEnderecoEstadoIgnoreCaseOrderByDataRegistroDesc(
+            String cidade,
+            String estado);
+
+    Optional<Ocorrencia> findByIdAndEmpresaId(Integer id, Integer empresaId);
+
+    List<Ocorrencia> findByEmpresaIdOrderByDataRegistroDesc(Integer empresaId);
 }

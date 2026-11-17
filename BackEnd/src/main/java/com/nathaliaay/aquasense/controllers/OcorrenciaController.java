@@ -34,16 +34,25 @@ public class OcorrenciaController {
     public ResponseEntity<OcorrenciaRespostaDTO> cadastrar(
             @Valid @RequestBody OcorrenciaCadastroDTO dto) {
 
-        OcorrenciaRespostaDTO resposta =
-                ocorrenciaService.cadastrar(dto);
+        OcorrenciaRespostaDTO resposta
+                = ocorrenciaService.cadastrar(dto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
     }
 
     @GetMapping
     public ResponseEntity<List<OcorrenciaRespostaDTO>> listarMinhasOcorrencias() {
-        List<OcorrenciaRespostaDTO> ocorrencias =
-                ocorrenciaService.listarMinhasOcorrencias();
+        List<OcorrenciaRespostaDTO> ocorrencias
+                = ocorrenciaService.listarMinhasOcorrencias();
+
+        return ResponseEntity.ok(ocorrencias);
+    }
+
+    @GetMapping("/empresa")
+    public ResponseEntity<List<OcorrenciaRespostaDTO>> listarOcorrenciasDaEmpresa() {
+
+        List<OcorrenciaRespostaDTO> ocorrencias
+                = ocorrenciaService.listarOcorrenciasDaEmpresa();
 
         return ResponseEntity.ok(ocorrencias);
     }
@@ -52,8 +61,8 @@ public class OcorrenciaController {
     public ResponseEntity<OcorrenciaRespostaDTO> buscarPorId(
             @PathVariable Integer id) {
 
-        OcorrenciaRespostaDTO ocorrencia =
-                ocorrenciaService.buscarPorId(id);
+        OcorrenciaRespostaDTO ocorrencia
+                = ocorrenciaService.buscarPorId(id);
 
         return ResponseEntity.ok(ocorrencia);
     }
@@ -63,8 +72,8 @@ public class OcorrenciaController {
             @PathVariable Integer id,
             @Valid @RequestBody AtualizacaoStatusOcorrenciaDTO dto) {
 
-        OcorrenciaRespostaDTO resposta =
-                ocorrenciaService.atualizarStatus(id, dto);
+        OcorrenciaRespostaDTO resposta
+                = ocorrenciaService.atualizarStatus(id, dto);
 
         return ResponseEntity.ok(resposta);
     }
@@ -74,8 +83,8 @@ public class OcorrenciaController {
             @PathVariable Integer id,
             @Valid @RequestBody AtualizacaoOcorrenciaDTO dto) {
 
-        OcorrenciaRespostaDTO resposta =
-                ocorrenciaService.atualizar(id, dto);
+        OcorrenciaRespostaDTO resposta
+                = ocorrenciaService.atualizar(id, dto);
 
         return ResponseEntity.ok(resposta);
     }

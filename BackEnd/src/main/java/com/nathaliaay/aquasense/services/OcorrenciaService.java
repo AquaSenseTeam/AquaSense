@@ -15,14 +15,18 @@ import com.nathaliaay.aquasense.dtos.AtualizacaoOcorrenciaDTO;
 import com.nathaliaay.aquasense.dtos.AtualizacaoStatusOcorrenciaDTO;
 import com.nathaliaay.aquasense.dtos.OcorrenciaCadastroDTO;
 import com.nathaliaay.aquasense.dtos.OcorrenciaRespostaDTO;
+import com.nathaliaay.aquasense.entities.CidadeAtendida;
+import com.nathaliaay.aquasense.entities.EmpresaSaneamento;
 import com.nathaliaay.aquasense.entities.Endereco;
 import com.nathaliaay.aquasense.entities.Ocorrencia;
+import com.nathaliaay.aquasense.enums.StatusAprovacao;
 import com.nathaliaay.aquasense.enums.StatusOcorrencia;
+import com.nathaliaay.aquasense.repositories.CidadeAtendidaRepository;
+import com.nathaliaay.aquasense.repositories.EmpresaSaneamentoRepository;
 import com.nathaliaay.aquasense.repositories.EnderecoRepository;
 import com.nathaliaay.aquasense.repositories.OcorrenciaRepository;
 import com.nathaliaay.aquasense.repositories.UsuarioRepository;
 import com.nathaliaay.aquasense.entities.Usuario;
-
 
 @Service
 public class OcorrenciaService {
@@ -30,106 +34,113 @@ public class OcorrenciaService {
     private final OcorrenciaRepository ocorrenciaRepository;
     private final EnderecoRepository enderecoRepository;
     private final UsuarioRepository usuarioRepository;
-    
+    private final CidadeAtendidaRepository cidadeAtendidaRepository;
+
+    private final EmpresaSaneamentoRepository empresaSaneamentoRepository;
+
     public OcorrenciaService(
             OcorrenciaRepository ocorrenciaRepository,
-            EnderecoRepository enderecoRepository, 
-            UsuarioRepository usuarioRepository) {
+            EnderecoRepository enderecoRepository,
+            UsuarioRepository usuarioRepository,
+            CidadeAtendidaRepository cidadeAtendidaRepository,
+            EmpresaSaneamentoRepository empresaSaneamentoRepository) {
+
         this.ocorrenciaRepository = ocorrenciaRepository;
         this.enderecoRepository = enderecoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.cidadeAtendidaRepository = cidadeAtendidaRepository;
+        this.empresaSaneamentoRepository = empresaSaneamentoRepository;
     }
 
+    @Transactional
+    public OcorrenciaRespostaDTO cadastrar(OcorrenciaCadastroDTO dto) {
+        Integer usuarioId = obterUsuarioIdAutenticado();
 
-	@Transactional
-	public OcorrenciaRespostaDTO cadastrar(OcorrenciaCadastroDTO dto) {
-	    Integer usuarioId = obterUsuarioIdAutenticado();
-	
-	    if (dto.tipo() == null) {
-	        throw new ResponseStatusException(
-	                HttpStatus.BAD_REQUEST,
-	                "O tipo da ocorrência é obrigatório"
-	        );
-	    }
-	
-	    boolean temEndereco = dto.enderecoId() != null;
-	    boolean temLatitude = dto.latitude() != null;
-	    boolean temLongitude = dto.longitude() != null;
-	
-	    if (temEndereco == (temLatitude && temLongitude)) {
-	        throw new ResponseStatusException(
-	                HttpStatus.BAD_REQUEST,
-	                "Informe um endereço cadastrado ou a localização atual"
-	        );
-	    }
-	
-	    if (temLatitude != temLongitude) {
-	        throw new ResponseStatusException(
-	                HttpStatus.BAD_REQUEST,
-	                "Latitude e longitude devem ser informadas juntas"
-	        );
-	    }
-	
-	    Endereco endereco = null;
-	
-	    if (temEndereco) {
-	        endereco = enderecoRepository
-	                .findByIdAndUsuarioId(dto.enderecoId(), usuarioId)
-	                .orElseThrow(() -> new ResponseStatusException(
-	                        HttpStatus.NOT_FOUND,
-	                        "Endereço não encontrado para este usuário"
-	                ));
-	    }
-	
-	    if (temLatitude && (dto.latitude() < -90 || dto.latitude() > 90)) {
-	        throw new ResponseStatusException(
-	                HttpStatus.BAD_REQUEST,
-	                "Latitude inválida"
-	        );
-	    }
-	
-	    if (temLongitude && (dto.longitude() < -180 || dto.longitude() > 180)) {
-	        throw new ResponseStatusException(
-	                HttpStatus.BAD_REQUEST,
-	                "Longitude inválida"
-	        );
-	    }
-	
-	    Ocorrencia ocorrencia = new Ocorrencia();
-	
-	    ocorrencia.setUsuario(
-	            endereco != null
-	                    ? endereco.getUsuario()
-	                    : buscarUsuarioAutenticado(usuarioId)
-	    );
-	
-	    ocorrencia.setEndereco(endereco);
-	    ocorrencia.setLatitude(dto.latitude());
-	    ocorrencia.setLongitude(dto.longitude());
-	    ocorrencia.setTipo(dto.tipo());
-	    ocorrencia.setDescricao(dto.descricao());
-	    ocorrencia.setStatus(StatusOcorrencia.PENDENTE);
-	    ocorrencia.setDataRegistro(LocalDateTime.now());
-	
-	    Ocorrencia salva = ocorrenciaRepository.save(ocorrencia);
-	
-	    return new OcorrenciaRespostaDTO(
-	            salva.getId(),
-	            salva.getEndereco() != null ? salva.getEndereco().getId() : null,
-	            salva.getLatitude(),
-	            salva.getLongitude(),
-	            salva.getTipo(),
-	            salva.getDescricao(),
-	            salva.getStatus(),
-	            salva.getDataRegistro(),
-	            salva.getDataResolucao()
-	    );
-	}
+        if (dto.tipo() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "O tipo da ocorrência é obrigatório"
+            );
+        }
 
+        boolean temEndereco = dto.enderecoId() != null;
+        boolean temLatitude = dto.latitude() != null;
+        boolean temLongitude = dto.longitude() != null;
+
+        if (temEndereco == (temLatitude && temLongitude)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Informe um endereço cadastrado ou a localização atual"
+            );
+        }
+
+        if (temLatitude != temLongitude) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Latitude e longitude devem ser informadas juntas"
+            );
+        }
+
+        Endereco endereco = null;
+
+        if (temEndereco) {
+            endereco = enderecoRepository
+                    .findByIdAndUsuarioId(dto.enderecoId(), usuarioId)
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Endereço não encontrado para este usuário"
+                    ));
+        }
+
+        if (temLatitude && (dto.latitude() < -90 || dto.latitude() > 90)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Latitude inválida"
+            );
+        }
+
+        if (temLongitude && (dto.longitude() < -180 || dto.longitude() > 180)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Longitude inválida"
+            );
+        }
+
+        Ocorrencia ocorrencia = new Ocorrencia();
+
+        ocorrencia.setUsuario(
+                endereco != null
+                        ? endereco.getUsuario()
+                        : buscarUsuarioAutenticado(usuarioId)
+        );
+
+        ocorrencia.setEndereco(endereco);
+        ocorrencia.setEmpresa(buscarEmpresaResponsavel(endereco));
+        ocorrencia.setLatitude(dto.latitude());
+        ocorrencia.setLongitude(dto.longitude());
+        ocorrencia.setTipo(dto.tipo());
+        ocorrencia.setDescricao(dto.descricao());
+        ocorrencia.setStatus(StatusOcorrencia.PENDENTE);
+        ocorrencia.setDataRegistro(LocalDateTime.now());
+
+        Ocorrencia salva = ocorrenciaRepository.save(ocorrencia);
+
+        return new OcorrenciaRespostaDTO(
+                salva.getId(),
+                salva.getEndereco() != null ? salva.getEndereco().getId() : null,
+                salva.getLatitude(),
+                salva.getLongitude(),
+                salva.getTipo(),
+                salva.getDescricao(),
+                salva.getStatus(),
+                salva.getDataRegistro(),
+                salva.getDataResolucao()
+        );
+    }
 
     private Integer obterUsuarioIdAutenticado() {
-        Authentication autenticacao =
-                SecurityContextHolder.getContext().getAuthentication();
+        Authentication autenticacao
+                = SecurityContextHolder.getContext().getAuthentication();
 
         if (autenticacao == null || !autenticacao.isAuthenticated()) {
             throw new ResponseStatusException(
@@ -185,8 +196,8 @@ public class OcorrenciaService {
         return new OcorrenciaRespostaDTO(
                 ocorrencia.getId(),
                 ocorrencia.getEndereco() != null
-                        ? ocorrencia.getEndereco().getId()
-                        : null,
+                ? ocorrencia.getEndereco().getId()
+                : null,
                 ocorrencia.getLatitude(),
                 ocorrencia.getLongitude(),
                 ocorrencia.getTipo(),
@@ -233,8 +244,8 @@ public class OcorrenciaService {
         return new OcorrenciaRespostaDTO(
                 atualizada.getId(),
                 atualizada.getEndereco() != null
-                        ? atualizada.getEndereco().getId()
-                                : null,
+                ? atualizada.getEndereco().getId()
+                : null,
                 atualizada.getLatitude(),
                 atualizada.getLongitude(),
                 atualizada.getTipo(),
@@ -285,9 +296,9 @@ public class OcorrenciaService {
 
         return new OcorrenciaRespostaDTO(
                 atualizada.getId(),
-                atualizada.getEndereco()  != null
-                        ? atualizada.getEndereco().getId()
-                                : null,
+                atualizada.getEndereco() != null
+                ? atualizada.getEndereco().getId()
+                : null,
                 atualizada.getLatitude(),
                 atualizada.getLongitude(),
                 atualizada.getTipo(),
@@ -297,12 +308,75 @@ public class OcorrenciaService {
                 atualizada.getDataResolucao()
         );
     }
-    
+
     private Usuario buscarUsuarioAutenticado(Integer usuarioId) {
         return usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Usuário autenticado não encontrado"
                 ));
+    }
+
+    private EmpresaSaneamento buscarEmpresaResponsavel(Endereco endereco) {
+
+        if (endereco == null) {
+            return null;
+        }
+
+        return cidadeAtendidaRepository
+                .findByCidadeIgnoreCaseAndEstadoIgnoreCase(
+                        endereco.getCidade().trim(),
+                        endereco.getEstado().trim()
+                )
+                .map(CidadeAtendida::getEmpresa)
+                .filter(empresa
+                        -> empresa.getStatusAprovacao() == StatusAprovacao.APROVADA
+                )
+                .orElse(null);
+    }
+
+    private EmpresaSaneamento buscarEmpresaAutenticada(Integer usuarioId) {
+
+        EmpresaSaneamento empresa = empresaSaneamentoRepository
+                .findByUsuarioId(usuarioId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Nenhuma empresa está vinculada a este usuário"
+                ));
+
+        if (empresa.getStatusAprovacao() != StatusAprovacao.APROVADA) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "A empresa ainda não foi aprovada"
+            );
+        }
+
+        return empresa;
+    }
+
+    @Transactional(readOnly = true)
+    public List<OcorrenciaRespostaDTO> listarOcorrenciasDaEmpresa() {
+
+        Integer usuarioId = obterUsuarioIdAutenticado();
+
+        EmpresaSaneamento empresa = buscarEmpresaAutenticada(usuarioId);
+
+        return ocorrenciaRepository
+                .findByEmpresaIdOrderByDataRegistroDesc(empresa.getId())
+                .stream()
+                .map(ocorrencia -> new OcorrenciaRespostaDTO(
+                        ocorrencia.getId(),
+                        ocorrencia.getEndereco() != null
+                        ? ocorrencia.getEndereco().getId()
+                        : null,
+                        ocorrencia.getLatitude(),
+                        ocorrencia.getLongitude(),
+                        ocorrencia.getTipo(),
+                        ocorrencia.getDescricao(),
+                        ocorrencia.getStatus(),
+                        ocorrencia.getDataRegistro(),
+                        ocorrencia.getDataResolucao()
+                ))
+                .collect(Collectors.toList());
     }
 }
