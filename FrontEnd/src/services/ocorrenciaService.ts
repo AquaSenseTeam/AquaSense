@@ -1,5 +1,6 @@
 import { api } from './api'
-import type { Ocorrencia, TipoOcorrencia } from '../types'
+import type { Ocorrencia, TipoOcorrencia, StatusOcorrencia } from '../types'
+
 
 type NovaOcorrencia = {
   enderecoId?: number | null
@@ -17,6 +18,12 @@ export const ocorrenciaService = {
 
   listarDaEmpresa: () =>
     api<Ocorrencia[]>('/ocorrencias/empresa'),
+
+  atualizarStatus: (id: number, status: StatusOcorrencia) =>
+  api<Ocorrencia>(`/ocorrencias/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  }),
 
   criar: (dados: NovaOcorrencia) =>
     api<Ocorrencia>('/ocorrencias', {

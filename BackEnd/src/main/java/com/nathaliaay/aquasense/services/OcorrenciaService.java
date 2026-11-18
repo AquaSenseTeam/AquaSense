@@ -210,44 +210,109 @@ public class OcorrenciaService {
         );
     }
 
-    @Transactional
-    public OcorrenciaRespostaDTO atualizarStatus(
-            Integer id,
-            AtualizacaoStatusOcorrenciaDTO dto) {
+    
+        @Transactional
+        public OcorrenciaRespostaDTO atualizarStatus(
+                Integer id,
+                AtualizacaoStatusOcorrenciaDTO dto) {
 
         Integer usuarioId = obterUsuarioIdAutenticado();
 
-        Ocorrencia ocorrencia = ocorrenciaRepository
-                .findByIdAndUsuarioId(id, usuarioId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Ocorrência não encontrada"
-                ));
-
-        if (dto.status() != StatusOcorrencia.CANCELADA) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "O usuário pode apenas cancelar a própria ocorrência"
-            );
+        if (dto.status() == null) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "O status é obrigatório"
+                );
         }
 
-        if (ocorrencia.getStatus() == StatusOcorrencia.CANCELADA
-                || ocorrencia.getStatus() == StatusOcorrencia.RESOLVIDA) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Esta ocorrência não pode mais ser cancelada"
-            );
-        }
+        Ocorrencia ocorrencia;
 
-        ocorrencia.setStatus(StatusOcorrencia.CANCELADA);
+        // Verifica se o usuário possui uma empresa vinculada.
+        boolean usuarioEmpresa = empresaSaneamentoRepository
+                .findByUsuarioId(usuarioId)
+                .isPresent();
+
+        if (usuarioEmpresa) {
+
+                EmpresaSaneamento empresa = buscarEmpresaAutenticada(usuarioId);
+
+                ocorrencia = ocorrenciaRepository
+                        .findByIdAndEmpresaId(id, empresa.getId())
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Ocorrência não encontrada para esta empresa"
+                        ));
+
+                // A empresa só pode iniciar ou concluir o atendimento.
+                if (dto.status() != StatusOcorrencia.EM_ANDAMENTO
+                        && dto.status() != StatusOcorrencia.RESOLVIDA) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "A empresa só pode iniciar ou concluir uma ocorrência"
+                );
+                }
+
+                if (dto.status() == StatusOcorrencia.EM_ANDAMENTO) {
+
+                if (ocorrencia.getStatus() != StatusOcorrencia.PENDENTE) {
+                        throw new ResponseStatusException(
+                                HttpStatus.CONFLICT,
+                                "Somente ocorrências pendentes podem entrar em andamento"
+                        );
+                }
+
+                ocorrencia.setStatus(StatusOcorrencia.EM_ANDAMENTO);
+                ocorrencia.setDataResolucao(null);
+                }
+
+                if (dto.status() == StatusOcorrencia.RESOLVIDA) {
+
+                if (ocorrencia.getStatus() != StatusOcorrencia.EM_ANDAMENTO) {
+                        throw new ResponseStatusException(
+                                HttpStatus.CONFLICT,
+                                "Somente ocorrências em andamento podem ser resolvidas"
+                        );
+                }
+
+                ocorrencia.setStatus(StatusOcorrencia.RESOLVIDA);
+                ocorrencia.setDataResolucao(LocalDateTime.now());
+                }
+
+        } else {
+
+                // Regra do morador: só pode cancelar a própria ocorrência.
+                ocorrencia = ocorrenciaRepository
+                        .findByIdAndUsuarioId(id, usuarioId)
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Ocorrência não encontrada"
+                        ));
+
+                if (dto.status() != StatusOcorrencia.CANCELADA) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "O usuário pode apenas cancelar a própria ocorrência"
+                );
+                }
+
+                if (ocorrencia.getStatus() == StatusOcorrencia.CANCELADA
+                        || ocorrencia.getStatus() == StatusOcorrencia.RESOLVIDA) {
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Esta ocorrência não pode mais ser cancelada"
+                );
+                }
+
+                ocorrencia.setStatus(StatusOcorrencia.CANCELADA);
+        }
 
         Ocorrencia atualizada = ocorrenciaRepository.save(ocorrencia);
 
         return new OcorrenciaRespostaDTO(
                 atualizada.getId(),
                 atualizada.getEndereco() != null
-                ? atualizada.getEndereco().getId()
-                : null,
+                        ? atualizada.getEndereco().getId()
+                        : null,
                 atualizada.getLatitude(),
                 atualizada.getLongitude(),
                 atualizada.getTipo(),
@@ -256,7 +321,8 @@ public class OcorrenciaService {
                 atualizada.getDataRegistro(),
                 atualizada.getDataResolucao()
         );
-    }
+        }
+
 
     @Transactional
     public OcorrenciaRespostaDTO atualizar(
