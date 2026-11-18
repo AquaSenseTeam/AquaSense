@@ -29,6 +29,7 @@ import AdminDashboard from "./pages/AdminDashboards";
 
 import EmpresaCidades from "./pages/EmpresaCidades";
 import EmpresaOcorrencias from "./pages/EmpresaOcorrencia";
+import EmpresaDashboard from "./pages/EmpresaDashboard";
 
 export default function App() {
   return (
@@ -88,7 +89,7 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<div>Dashboard da empresa</div>} />
+          <Route index element={<EmpresaDashboard />} />
           <Route path="cidades" element={<EmpresaCidades />} />
           <Route
             path="ocorrencias"
