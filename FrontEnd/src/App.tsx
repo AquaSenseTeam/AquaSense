@@ -30,6 +30,7 @@ import AdminDashboard from "./pages/AdminDashboards";
 import EmpresaCidades from "./pages/EmpresaCidades";
 import EmpresaOcorrencias from "./pages/EmpresaOcorrencia";
 import EmpresaDashboard from "./pages/EmpresaDashboard";
+import EmpresaPerfil from "./pages/EmpresaPerfil";
 
 export default function App() {
   return (
@@ -97,7 +98,7 @@ export default function App() {
           />
           <Route path="consumo" element={<div>Indicadores de consumo</div>} />
           <Route path="notificacoes" element={<div>Notificações</div>} />
-          <Route path="perfil" element={<div>Dados da empresa</div>} />
+          <Route path="perfil" element={<EmpresaPerfil />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

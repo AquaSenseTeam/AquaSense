@@ -20,6 +20,10 @@ import com.nathaliaay.aquasense.repositories.EmpresaSaneamentoRepository;
 import com.nathaliaay.aquasense.repositories.UsuarioRepository;
 import com.nathaliaay.aquasense.entities.CidadeAtendida;
 import com.nathaliaay.aquasense.repositories.CidadeAtendidaRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.nathaliaay.aquasense.dtos.EmpresaDetalhesDTO;
 
 @Service
 public class EmpresaSaneamentoService {
@@ -215,5 +219,52 @@ public class EmpresaSaneamentoService {
 	        .map(this::converterParaResposta)
 	        .toList();
 	}
+
+        @Transactional(readOnly = true)
+public EmpresaDetalhesDTO buscarDadosDaEmpresaAutenticada() {
+
+    Integer usuarioId = obterUsuarioIdAutenticado();
+
+    EmpresaSaneamento empresa = empresaRepository
+            .findByUsuarioId(usuarioId)
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Empresa não encontrada."
+            ));
+
+    return new EmpresaDetalhesDTO(
+            empresa.getId(),
+            empresa.getNome(),
+            empresa.getNomeFantasia(),
+            empresa.getCnpj(),
+            empresa.getEmail(),
+            empresa.getTelefone(),
+            empresa.getCidade(),
+            empresa.getEstado(),
+            empresa.getStatusAprovacao()
+    );
+}
+
+        private Integer obterUsuarioIdAutenticado() {
+
+        Authentication autenticacao =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        if (autenticacao == null || !autenticacao.isAuthenticated()) {
+                throw new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Usuário não autenticado"
+                );
+        }
+
+        try {
+                return Integer.valueOf(autenticacao.getPrincipal().toString());
+        } catch (NumberFormatException e) {
+                throw new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Identificação do usuário inválida"
+                );
+        }
+        }
 
 }

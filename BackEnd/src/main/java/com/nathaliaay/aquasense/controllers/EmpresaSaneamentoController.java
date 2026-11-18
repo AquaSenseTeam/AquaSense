@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nathaliaay.aquasense.dtos.EmpresaCadastroDTO;
+import com.nathaliaay.aquasense.dtos.EmpresaDetalhesDTO;
 import com.nathaliaay.aquasense.dtos.EmpresaRespostaDTO;
 import com.nathaliaay.aquasense.services.EmpresaSaneamentoService;
 
@@ -39,5 +40,12 @@ public class EmpresaSaneamentoController {
                 .body(resposta);
     }
 
-	
+	@GetMapping("/me")
+    public ResponseEntity<EmpresaDetalhesDTO> buscarDadosDaEmpresa() {
+
+        EmpresaDetalhesDTO resposta =
+                empresaService.buscarDadosDaEmpresaAutenticada();
+
+        return ResponseEntity.ok(resposta);
+    }
 }

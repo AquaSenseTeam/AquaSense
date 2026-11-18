@@ -9,6 +9,19 @@ export interface Empresa {
   statusAprovacao: 'PENDENTE' | 'APROVADA' | 'REJEITADA'
 }
 
+export interface EmpresaDetalhes {
+  id: number
+  nome: string
+  nomeFantasia: string | null
+  cnpj: string
+  email: string | null
+  telefone: string | null
+  cidade: string | null
+  estado: string | null
+  statusAprovacao: 'PENDENTE' | 'APROVADA' | 'REJEITADA'
+}
+
+
 export const empresaService = {
   listarPendentes: () =>
     api<Empresa[]>('/admin/empresas/pendentes'),
@@ -22,4 +35,7 @@ export const empresaService = {
     api<Empresa>(`/admin/empresas/${id}/rejeitar`, {
       method: 'PATCH',
     }),
+
+    buscarMeusDados: () =>
+    api<EmpresaDetalhes>('/empresas/me'),
 }
