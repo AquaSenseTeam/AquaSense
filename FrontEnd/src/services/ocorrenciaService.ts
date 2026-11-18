@@ -1,4 +1,3 @@
-
 import { api } from './api'
 import type { Ocorrencia, TipoOcorrencia } from '../types'
 
@@ -15,6 +14,9 @@ type NovaOcorrencia = {
 export const ocorrenciaService = {
   listar: (_usuarioId?: number) =>
     api<Ocorrencia[]>('/ocorrencias'),
+
+  listarDaEmpresa: () =>
+    api<Ocorrencia[]>('/ocorrencias/empresa'),
 
   criar: (dados: NovaOcorrencia) =>
     api<Ocorrencia>('/ocorrencias', {

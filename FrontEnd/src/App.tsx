@@ -28,6 +28,7 @@ import AdminEmpresas from "./pages/AdminEmpresas";
 import AdminDashboard from "./pages/AdminDashboards";
 
 import EmpresaCidades from "./pages/EmpresaCidades";
+import EmpresaOcorrencias from "./pages/EmpresaOcorrencia";
 
 export default function App() {
   return (
@@ -91,7 +92,7 @@ export default function App() {
           <Route path="cidades" element={<EmpresaCidades />} />
           <Route
             path="ocorrencias"
-            element={<div>Ocorrências recebidas</div>}
+            element={<EmpresaOcorrencias />}
           />
           <Route path="consumo" element={<div>Indicadores de consumo</div>} />
           <Route path="notificacoes" element={<div>Notificações</div>} />
