@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from "react";
 import {
   Building2,
   Phone,
@@ -11,77 +11,76 @@ import {
   FileText,
   LoaderCircle,
   BadgeCheck,
-} from 'lucide-react'
+} from "lucide-react";
 
-import SubPagina from '../components/SubPagina'
-import Mensagem, { type Msg } from '../components/Mensagem'
-import { ApiError } from '../services/api'
+import SubPagina from "../components/SubPagina";
+import Mensagem, { type Msg } from "../components/Mensagem";
+import { ApiError } from "../services/api";
 import {
   empresaService,
   type EmpresaDetalhes,
-} from '../services/empresaService'
+} from "../services/empresaService";
 
 export default function EmpresaPerfil() {
-  const [empresa, setEmpresa] = useState<EmpresaDetalhes | null>(null)
+  const [empresa, setEmpresa] = useState<EmpresaDetalhes | null>(null);
 
-  const [nomeFantasia, setNomeFantasia] = useState('')
-  const [telefone, setTelefone] = useState('')
+  const [nomeFantasia, setNomeFantasia] = useState("");
+  const [telefone, setTelefone] = useState("");
 
-  const [carregando, setCarregando] = useState(true)
-  const [salvando, setSalvando] = useState(false)
+  const [carregando, setCarregando] = useState(true);
 
-  const [msg, setMsg] = useState<Msg | null>(null)
+  const [msg, setMsg] = useState<Msg | null>(null);
 
   async function carregarDados() {
     try {
-      setMsg(null)
+      setMsg(null);
 
-      const resposta = await empresaService.buscarMeusDados()
+      const resposta = await empresaService.buscarMeusDados();
 
-      setEmpresa(resposta)
-      setNomeFantasia(resposta.nomeFantasia ?? '')
-      setTelefone(resposta.telefone ?? '')
+      setEmpresa(resposta);
+      setNomeFantasia(resposta.nomeFantasia ?? "");
+      setTelefone(resposta.telefone ?? "");
     } catch (error) {
       setMsg({
-        tipo: 'erro',
+        tipo: "erro",
         texto:
           error instanceof ApiError
             ? error.message
-            : 'Não foi possível carregar os dados da empresa.',
-      })
+            : "Não foi possível carregar os dados da empresa.",
+      });
     } finally {
-      setCarregando(false)
+      setCarregando(false);
     }
   }
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    carregarDados()
-  }, [])
+    carregarDados();
+  }, []);
 
   async function salvar(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+    e.preventDefault();
 
     setMsg({
-      tipo: 'erro',
-      texto: 'A edição dos dados será habilitada após a implementação no backend.',
-    })
+      tipo: "erro",
+      texto: "A edição dos dados ainda não está disponível.",
+    });
   }
 
   const status = {
     APROVADA: {
-      texto: 'Aprovada',
-      classe: 'bg-green-50 text-green-700 border-green-200',
+      texto: "Aprovada",
+      classe: "bg-green-50 text-green-700 border-green-200",
     },
     PENDENTE: {
-      texto: 'Em análise',
-      classe: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+      texto: "Em análise",
+      classe: "bg-yellow-50 text-yellow-700 border-yellow-200",
     },
     REJEITADA: {
-      texto: 'Rejeitada',
-      classe: 'bg-red-50 text-red-700 border-red-200',
+      texto: "Rejeitada",
+      classe: "bg-red-50 text-red-700 border-red-200",
     },
-  }
+  };
 
   return (
     <SubPagina
@@ -120,9 +119,7 @@ export default function EmpresaPerfil() {
               <h2 className="font-bold text-gray-800">
                 {empresa.nomeFantasia || empresa.nome}
               </h2>
-              <p className="mt-1 text-sm text-gray-500">
-                Cadastro empresarial
-              </p>
+              <p className="mt-1 text-sm text-gray-500">Cadastro empresarial</p>
             </div>
 
             <span
@@ -173,7 +170,7 @@ export default function EmpresaPerfil() {
                   <Building2 className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
                   <input
                     value={nomeFantasia}
-                    onChange={e => setNomeFantasia(e.target.value)}
+                    onChange={(e) => setNomeFantasia(e.target.value)}
                     maxLength={150}
                     placeholder="Nome fantasia da empresa"
                     className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-10 pr-4 text-sm text-gray-800 outline-none transition focus:border-aqua-500 focus:ring-2 focus:ring-aqua-100"
@@ -201,7 +198,7 @@ export default function EmpresaPerfil() {
                   <input
                     type="tel"
                     value={telefone}
-                    onChange={e => setTelefone(e.target.value)}
+                    onChange={(e) => setTelefone(e.target.value)}
                     maxLength={20}
                     placeholder="(11) 99999-9999"
                     className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-10 pr-4 text-sm text-gray-800 outline-none transition focus:border-aqua-500 focus:ring-2 focus:ring-aqua-100"
@@ -215,7 +212,7 @@ export default function EmpresaPerfil() {
                   <Mail className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
                   <input
                     type="email"
-                    value={empresa.email ?? ''}
+                    value={empresa.email ?? ""}
                     disabled
                     readOnly
                     className="w-full cursor-not-allowed rounded-xl border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 text-sm text-gray-500 outline-none"
@@ -228,7 +225,9 @@ export default function EmpresaPerfil() {
                 <div className="relative mt-2">
                   <MapPin className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
                   <input
-                    value={[empresa.cidade, empresa.estado].filter(Boolean).join(' - ')}
+                    value={[empresa.cidade, empresa.estado]
+                      .filter(Boolean)
+                      .join(" - ")}
                     disabled
                     readOnly
                     className="w-full cursor-not-allowed rounded-xl border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 text-sm text-gray-500 outline-none"
@@ -245,8 +244,8 @@ export default function EmpresaPerfil() {
                 </p>
                 <p className="mt-1 text-xs leading-relaxed text-blue-800">
                   A razão social, o CNPJ e o e-mail são informações protegidas
-                  nesta tela. Para solicitar alterações, entre em contato com
-                  o suporte do AquaSense.
+                  nesta tela. Para solicitar alterações, entre em contato com o
+                  suporte do AquaSense.
                 </p>
               </div>
             </div>
@@ -257,11 +256,10 @@ export default function EmpresaPerfil() {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  disabled={salvando}
                   className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-aqua-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-aqua-700 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
                   <Save className="h-4 w-4" />
-                  {salvando ? 'Salvando...' : 'Salvar alterações'}
+                    Salvar alterações
                 </button>
               </div>
             </div>
@@ -269,5 +267,5 @@ export default function EmpresaPerfil() {
         </div>
       )}
     </SubPagina>
-  )
+  );
 }
