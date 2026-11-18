@@ -31,6 +31,7 @@ import EmpresaCidades from "./pages/EmpresaCidades";
 import EmpresaOcorrencias from "./pages/EmpresaOcorrencia";
 import EmpresaDashboard from "./pages/EmpresaDashboard";
 import EmpresaPerfil from "./pages/EmpresaPerfil";
+import EmpresaNotificacao from "./pages/EmpresaNotificacao";
 
 export default function App() {
   return (
@@ -97,7 +98,7 @@ export default function App() {
             element={<EmpresaOcorrencias />}
           />
           <Route path="consumo" element={<div>Indicadores de consumo</div>} />
-          <Route path="notificacoes" element={<div>Notificações</div>} />
+          <Route path="notificacoes" element={<EmpresaNotificacao />} />
           <Route path="perfil" element={<EmpresaPerfil />} />
         </Route>
 
