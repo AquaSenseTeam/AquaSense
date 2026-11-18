@@ -45,7 +45,7 @@ function OndaEntradaEscura() {
     <svg
       viewBox="0 0 1440 120"
       preserveAspectRatio="none"
-      className="block h-[100px] w-full"
+      className="block h-[65px] w-full sm:h-[80px] lg:h-[100px]"
       aria-hidden="true"
     >
       <path
@@ -70,7 +70,7 @@ function OndaSaidaEscura() {
     <svg
       viewBox="0 0 1440 120"
       preserveAspectRatio="none"
-      className="block h-[90px] w-full"
+      className="block h-[65px] w-full sm:h-[80px] lg:h-[90px]"
       aria-hidden="true"
     >
       <path
@@ -91,17 +91,17 @@ function OndaSaidaEscura() {
 
 export default function Landing() {
   return (
-    <main className="overflow-hidden bg-[#E8F3F9] text-[#064477]">
+    <main className="w-full overflow-hidden bg-[#E8F3F9] text-[#064477]">
       {/* CABEÇALHO */}
-      <header className="relative z-20 mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-6 lg:px-12">
+      <header className="relative z-20 mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-5 sm:px-6 lg:px-12">
         <Link to="/inicio" className="flex shrink-0 items-center gap-2">
-          <Droplet size={38} strokeWidth={2.5} className="text-[#168BC5]" />
+          <Droplet size={34} strokeWidth={2.5} className="text-[#168BC5]" />
 
           <div>
-            <span className="block text-xl font-extrabold leading-none">
+            <span className="block text-lg font-extrabold leading-none sm:text-xl">
               AquaSense
             </span>
-            <span className="text-[9px] tracking-wider text-gray-500">
+            <span className="text-[8px] tracking-wider text-gray-500 sm:text-[9px]">
               Sua cidade, nossa água
             </span>
           </div>
@@ -124,14 +124,14 @@ export default function Landing() {
         <div className="flex shrink-0 items-center gap-2">
           <Link
             to="/cadastro"
-            className="rounded-full bg-[#064477] px-5 py-2.5 text-xs font-semibold text-white transition hover:bg-[#0875A8]"
+            className="rounded-full bg-[#064477] px-3 py-2 text-[11px] font-semibold text-white transition hover:bg-[#0875A8] sm:px-5 sm:py-2.5 sm:text-xs"
           >
             Começar
           </Link>
 
           <Link
             to="/login"
-            className="rounded-full border border-[#064477] px-5 py-2.5 text-xs font-semibold transition hover:bg-[#064477] hover:text-white"
+            className="rounded-full border border-[#064477] px-3 py-2 text-[11px] font-semibold transition hover:bg-[#064477] hover:text-white sm:px-5 sm:py-2.5 sm:text-xs"
           >
             Log in
           </Link>
@@ -141,56 +141,70 @@ export default function Landing() {
       {/* HERO */}
       <section
         id="inicio"
-        className="relative mx-auto grid min-h-[520px] max-w-7xl items-center gap-8 px-6 pb-28 pt-10 lg:grid-cols-2 lg:px-16"
+        className="relative mx-auto grid min-h-[480px] max-w-7xl items-center gap-8 px-5 pb-20 pt-8 sm:px-8 lg:min-h-[520px] lg:grid-cols-2 lg:gap-10 lg:px-16 lg:pb-28"
       >
-        <div className="relative z-10 max-w-xl">
+        <div className="relative z-10 mx-auto max-w-xl text-center lg:mx-0 lg:text-left">
           <p className="mb-2 text-sm font-bold text-gray-900 md:text-base">
             Comunique. Acompanhe. Preserve.
           </p>
 
-          <h1 className="text-4xl font-extrabold leading-[1.15] tracking-tight text-[#064477] md:text-5xl lg:text-[54px]">
+          <h1 className="text-3xl font-extrabold leading-[1.15] tracking-tight text-[#064477] sm:text-4xl md:text-5xl lg:text-[54px]">
             A água da cidade também está{" "}
             <span className="text-[#399CC1]">nas suas mãos.</span>
           </h1>
 
-          <p className="mt-6 max-w-lg text-sm leading-7 text-gray-600 md:text-base">
+          <p className="mx-auto mt-5 max-w-lg text-sm leading-7 text-gray-600 sm:text-base lg:mx-0">
             O AquaSense conecta você aos serviços de saneamento para comunicar
             ocorrências de forma simples e eficiente.
           </p>
 
           <Link
             to="/cadastro"
-            className="mt-8 inline-flex items-center gap-3 rounded-xl bg-[#064477] px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:-translate-y-1 hover:bg-[#0875A8]"
+            className="mt-7 inline-flex items-center gap-3 rounded-xl bg-[#064477] px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:-translate-y-1 hover:bg-[#0875A8]"
           >
             Conheça o AquaSense
             <ArrowUpRight size={19} />
           </Link>
         </div>
 
-        <div className="relative flex items-center justify-center lg:justify-end">
+        <div className="relative z-0 flex min-w-0 items-center justify-center lg:justify-end">
           <img
             src={mockupLogin}
-            alt="Demonstração da plataforma AquaSense em um notebook"
-            className="relative z-10 left-96 max-w-[1000px]"
+            alt="Mockup do AquaSense"
+            className="
+                    h-auto
+                    w-full
+                    max-w-[550px]
+                    sm:max-w-[650px]
+                    lg:max-w-none
+                    lg:w-[990px]
+                    lg:translate-x-[380px]
+          "
           />
         </div>
-
-        {/* ONDA DO HERO */}
       </section>
-      {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#C4E6FA" fill-opacity="1" d="M0,128L30,128C60,128,120,128,180,149.3C240,171,300,213,360,208C420,203,480,149,540,138.7C600,128,660,160,720,170.7C780,181,840,171,900,160C960,149,1020,139,1080,160C1140,181,1200,235,1260,261.3C1320,288,1380,288,1410,288L1440,288L1440,320L1410,320C1380,320,1320,320,1260,320C1200,320,1140,320,1080,320C1020,320,960,320,900,320C840,320,780,320,720,320C660,320,600,320,540,320C480,320,420,320,360,320C300,320,240,320,180,320C120,320,60,320,30,320L0,320Z"></path></svg> */}
 
-      {/* ETAPAS */}
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+      {/* ONDA E ETAPAS */}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 1440 320"
+        className="block w-full"
+        aria-hidden="true"
+      >
         <path
           fill="#BDD5E8"
-          fill-opacity="1"
+          fillOpacity="1"
           d="M0,96L48,85.3C96,75,192,53,288,80C384,107,480,181,576,213.3C672,245,768,235,864,229.3C960,224,1056,224,1152,197.3C1248,171,1344,117,1392,90.7L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
-        ></path>
+        />
       </svg>
-      <section className="bg-[#BDD5E8] px-6 py-10 lg:px-12">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
+
+      <section className="bg-[#BDD5E8] px-5 py-12 sm:px-8 lg:px-12 lg:py-16">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
           {passos.map(({ Icone, titulo, texto }) => (
-            <article key={titulo} className="flex flex-col items-start">
+            <article
+              key={titulo}
+              className="flex flex-col items-center text-center sm:items-start sm:text-left"
+            >
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#D6EAF7] text-[#064477]">
                 <Icone size={29} strokeWidth={1.8} />
               </div>
@@ -204,20 +218,34 @@ export default function Landing() {
           ))}
         </div>
       </section>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#bdd5e8" fill-opacity="1" d="M0,192L60,176C120,160,240,128,360,138.7C480,149,600,203,720,229.3C840,256,960,256,1080,240C1200,224,1320,192,1380,176L1440,160L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path></svg>
+
+      {/* ONDA DE TRANSIÇÃO */}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 1440 320"
+        className="block w-full"
+        aria-hidden="true"
+      >
+        <path
+          fill="#BDD5E8"
+          fillOpacity="1"
+          d="M0,192L60,176C120,160,240,128,360,138.7C480,149,600,203,720,229.3C840,256,960,256,1080,240C1200,224,1320,192,1380,176L1440,160L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
+        />
+      </svg>
+
       {/* PROBLEMA E SOLUÇÃO */}
       <section
         id="projeto"
-        className="mx-auto max-w-7xl space-y-20 px-6 py-20 lg:px-16 lg:py-24"
+        className="mx-auto max-w-7xl space-y-16 px-5 py-16 sm:px-8 sm:py-20 lg:space-y-20 lg:px-16 lg:py-24"
       >
         {/* O PROBLEMA */}
-        <div className="grid items-center gap-10 md:grid-cols-2">
+        <div className="grid items-center gap-8 md:grid-cols-2 lg:gap-10">
           <div>
-            <h2 className="mb-6 text-2xl font-extrabold text-[#9BBBD5] md:text-3xl">
+            <h2 className="mb-5 text-2xl font-extrabold text-[#9BBBD5] sm:text-3xl">
               O Problema
             </h2>
 
-            <div className="rounded-[42px] border border-white/70 bg-white/40 p-7 shadow-[inset_0_0_25px_rgba(255,255,255,0.7)] md:p-9">
+            <div className="rounded-[28px] border border-white/70 bg-white/40 p-6 shadow-[inset_0_0_25px_rgba(255,255,255,0.7)] sm:rounded-[42px] sm:p-9">
               <h3 className="text-xl font-bold leading-relaxed text-[#064477]">
                 Problemas com a água não podem esperar.
               </h3>
@@ -248,7 +276,7 @@ export default function Landing() {
         </div>
 
         {/* NOSSA SOLUÇÃO */}
-        <div className="grid items-center gap-10 md:grid-cols-2">
+        <div className="grid items-center gap-8 md:grid-cols-2 lg:gap-10">
           <div className="order-2 flex justify-center md:order-1">
             <img
               src={solucao}
@@ -258,11 +286,11 @@ export default function Landing() {
           </div>
 
           <div className="order-1 md:order-2">
-            <h2 className="mb-6 text-2xl font-extrabold text-[#9BBBD5] md:text-3xl">
+            <h2 className="mb-5 text-2xl font-extrabold text-[#9BBBD5] sm:text-3xl">
               Nossa solução
             </h2>
 
-            <div className="rounded-[42px] border border-white/70 bg-white/40 p-7 shadow-[inset_0_0_25px_rgba(255,255,255,0.7)] md:p-9">
+            <div className="rounded-[28px] border border-white/70 bg-white/40 p-6 shadow-[inset_0_0_25px_rgba(255,255,255,0.7)] sm:rounded-[42px] sm:p-9">
               <h3 className="text-center text-xl font-bold leading-relaxed text-[#064477]">
                 Uma solução que conecta pessoas e saneamento.
               </h3>
@@ -285,25 +313,26 @@ export default function Landing() {
 
       {/* CADA GOTA IMPORTA */}
       <section className="bg-[#E8F3F9]">
-        {/* ENTRADA DA SEÇÃO AZUL */}
         <OndaEntradaEscura />
 
-        <div className="bg-[#064477] px-6 py-14 text-white lg:px-16">
+        <div className="bg-[#064477] px-5 py-12 text-white sm:px-8 sm:py-14 lg:px-16">
           <div className="mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-2">
             <div className="flex flex-col items-center justify-center text-center">
               <div className="flex h-20 w-20 items-center justify-center rounded-full border border-[#8BC8E9]/40 bg-[#8BC8E9]/20 text-[#A8DDF6]">
                 <Feather size={43} strokeWidth={1.4} />
               </div>
 
-              <h2 className="mt-4 text-xl font-bold">
+              <h2 className="mt-4 text-lg font-bold sm:text-xl">
                 Informar. Conectar. Preservar.
               </h2>
             </div>
 
-            <div>
-              <h2 className="text-2xl font-extrabold">Cada gota importa.</h2>
+            <div className="text-center md:text-left">
+              <h2 className="text-2xl font-extrabold sm:text-3xl">
+                Cada gota importa.
+              </h2>
 
-              <p className="mt-4 max-w-xl text-sm font-medium leading-7 text-white/90">
+              <p className="mt-4 text-sm font-medium leading-7 text-white/90">
                 A água é um recurso essencial e seu desperdício afeta toda a
                 sociedade. Ao facilitar a identificação e comunicação de
                 problemas, o AquaSense contribui para uma utilização mais
@@ -313,20 +342,19 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* SAÍDA DA SEÇÃO AZUL */}
         <OndaSaidaEscura />
       </section>
 
       {/* RODAPÉ */}
       <footer
         id="contato"
-        className="relative mt-40 bg-[#064477] px-6 pb-8 pt-12 text-white lg:px-16"
+        className="relative mt-28 bg-[#064477] px-5 pb-8 pt-12 text-white sm:mt-32 sm:px-8 lg:mt-40 lg:px-16"
       >
         {/* CURVA SUPERIOR DO RODAPÉ */}
         <svg
           viewBox="0 0 1440 110"
           preserveAspectRatio="none"
-          className="pointer-events-none absolute bottom-full left-0 h-[80px] w-full"
+          className="pointer-events-none absolute bottom-full left-0 h-[65px] w-full sm:h-[80px]"
           aria-hidden="true"
         >
           <path
@@ -344,7 +372,7 @@ export default function Landing() {
           />
         </svg>
 
-        <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-2">
+        <div className="mx-auto grid max-w-7xl gap-8 sm:grid-cols-2 sm:gap-10">
           <div>
             <h2 className="text-xl font-extrabold text-[#A8DDF6]">AquaSense</h2>
 
@@ -353,7 +381,7 @@ export default function Landing() {
             </p>
           </div>
 
-          <nav className="flex flex-col gap-3 text-sm font-semibold md:items-end">
+          <nav className="flex flex-col gap-3 text-sm font-semibold sm:items-end">
             <a href="#inicio" className="transition hover:text-[#A8DDF6]">
               Início
             </a>
@@ -368,7 +396,7 @@ export default function Landing() {
           </nav>
         </div>
 
-        <div className="mx-auto mt-10 flex max-w-7xl flex-col items-center justify-center gap-5 pt-6 text-xs font-medium sm:flex-row">
+        <div className="mx-auto mt-10 flex max-w-7xl flex-col items-center justify-center gap-5 border-t border-white/10 pt-6 text-center text-xs font-medium sm:flex-row sm:flex-wrap">
           <a
             href="https://github.com/AquaSenseTeam"
             target="_blank"
