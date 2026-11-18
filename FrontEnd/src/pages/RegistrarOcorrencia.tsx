@@ -7,6 +7,9 @@ import { ocorrenciaService } from "../services/ocorrenciaService";
 import { usuarioService } from "../services/usuarioService";
 import { tipoLabel } from "../utils/format";
 import type { TipoOcorrencia } from "../types";
+import {
+  buscarDadosEnderecoPorCoordenadas,
+} from "../services/geocodificacaoService";
 
 const tipos = [
   {
@@ -89,21 +92,39 @@ export default function RegistrarOcorrencia() {
     );
   }
 
-  async function enviar() {
-    try {
-      await ocorrenciaService.criar({
-        enderecoId: usarLocalizacaoAtual ? null : enderecoId,
-        latitude: usarLocalizacaoAtual ? localizacao?.latitude : null,
-        longitude: usarLocalizacaoAtual ? localizacao?.longitude : null,
-        tipo: tipo!,
-        descricao,
-      });
+  
+async function enviar() {
+  try {
+    let cidade: string | null = null
+    let estado: string | null = null
 
-      navigate("/ocorrencias");
-    } catch {
-      setErro("Não foi possível registrar. A API está rodando?");
+    if (usarLocalizacaoAtual && localizacao) {
+      const dadosEndereco = await buscarDadosEnderecoPorCoordenadas(
+        localizacao.latitude,
+        localizacao.longitude,
+      )
+
+      cidade = dadosEndereco?.cidade ?? null
+      estado = dadosEndereco?.estado ?? null
     }
+
+    await ocorrenciaService.criar({
+      enderecoId: usarLocalizacaoAtual ? null : enderecoId,
+      latitude: usarLocalizacaoAtual ? localizacao?.latitude : null,
+      longitude: usarLocalizacaoAtual ? localizacao?.longitude : null,
+      cidade,
+      estado,
+      tipo: tipo!,
+      descricao,
+    })
+
+    navigate("/ocorrencias")
+  } catch (erro) {
+    console.error("Erro ao registrar ocorrência:", erro)
+    setErro("Não foi possível registrar. Verifique sua conexão com a API.")
   }
+}
+
 
   const [localizacao, setLocalizacao] = useState<{
     latitude: number;

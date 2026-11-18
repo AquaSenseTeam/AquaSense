@@ -1,4 +1,3 @@
-
 package com.nathaliaay.aquasense.entities;
 
 import jakarta.persistence.Column;

@@ -1,4 +1,3 @@
-
 package com.nathaliaay.aquasense.dtos;
 
 import java.time.LocalDateTime;
@@ -16,4 +15,5 @@ public record OcorrenciaRespostaDTO(
     StatusOcorrencia status,
     LocalDateTime dataRegistro,
     LocalDateTime dataResolucao
+    
 ) {}

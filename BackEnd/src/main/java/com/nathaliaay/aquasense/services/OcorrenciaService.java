@@ -115,7 +115,9 @@ public class OcorrenciaService {
         );
 
         ocorrencia.setEndereco(endereco);
-        ocorrencia.setEmpresa(buscarEmpresaResponsavel(endereco));
+        String cidade = endereco != null ? endereco.getCidade() : dto.cidade();
+        String estado = endereco != null ? endereco.getEstado() : dto.estado();
+        ocorrencia.setEmpresa(buscarEmpresaResponsavel(cidade, estado));
         ocorrencia.setLatitude(dto.latitude());
         ocorrencia.setLongitude(dto.longitude());
         ocorrencia.setTipo(dto.tipo());
@@ -317,23 +319,20 @@ public class OcorrenciaService {
                 ));
     }
 
-    private EmpresaSaneamento buscarEmpresaResponsavel(Endereco endereco) {
-
-        if (endereco == null) {
-            return null;
-        }
-
-        return cidadeAtendidaRepository
-                .findByCidadeIgnoreCaseAndEstadoIgnoreCase(
-                        endereco.getCidade().trim(),
-                        endereco.getEstado().trim()
-                )
-                .map(CidadeAtendida::getEmpresa)
-                .filter(empresa
-                        -> empresa.getStatusAprovacao() == StatusAprovacao.APROVADA
-                )
-                .orElse(null);
+    private EmpresaSaneamento buscarEmpresaResponsavel(String cidade, String estado) {
+    if (cidade == null || cidade.isBlank() || estado == null || estado.isBlank()) {
+        return null;
     }
+
+    return cidadeAtendidaRepository
+            .findByCidadeIgnoreCaseAndEstadoIgnoreCase(
+                    cidade.trim(),
+                    estado.trim()
+            )
+            .map(CidadeAtendida::getEmpresa)
+            .filter(empresa -> empresa.getStatusAprovacao() == StatusAprovacao.APROVADA)
+            .orElse(null);
+        }
 
     private EmpresaSaneamento buscarEmpresaAutenticada(Integer usuarioId) {
 

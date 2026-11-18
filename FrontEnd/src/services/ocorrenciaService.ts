@@ -6,6 +6,8 @@ type NovaOcorrencia = {
   enderecoId?: number | null
   latitude?: number | null
   longitude?: number | null
+  cidade?: string | null
+  estado?: string | null
   tipo: TipoOcorrencia
   descricao?: string | null
 }
@@ -21,6 +23,8 @@ export const ocorrenciaService = {
         enderecoId: dados.enderecoId ?? null,
         latitude: dados.latitude ?? null,
         longitude: dados.longitude ?? null,
+        cidade: dados.cidade ?? null,
+        estado: dados.estado ?? null,
         tipo: dados.tipo,
         descricao: dados.descricao ?? null,
       }),
